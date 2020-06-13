@@ -1,0 +1,15 @@
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\bin\Debug\wallpaperchanger.exe.config
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\bin\Debug\wallpaperchanger.exe
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\bin\Debug\wallpaperchanger.pdb
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\obj\Debug\wallpaperchanger.csprojAssemblyReference.cache
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\obj\Debug\wallpaperchanger.Form1.resources
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\obj\Debug\wallpaperchanger.Properties.Resources.resources
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\obj\Debug\wallpaperchanger.csproj.GenerateResource.cache
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\obj\Debug\wallpaperchanger.csproj.CoreCompileInputs.cache
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\obj\Debug\wallpaperchanger.exe
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\obj\Debug\wallpaperchanger.pdb
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\bin\Debug\Newtonsoft.Json.dll
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\bin\Debug\System.Net.Http.Formatting.dll
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\bin\Debug\Newtonsoft.Json.xml
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\bin\Debug\System.Net.Http.Formatting.xml
+D:\Development\wallpaperchanger\wallpaperchanger\wallpaperchanger\obj\Debug\wallpaperchanger.csproj.CopyComplete
