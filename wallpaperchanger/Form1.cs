@@ -17,9 +17,9 @@ namespace wallpaperchanger
 {
     public partial class Form1 : Form
     {
-        private UserPreferences prefs;
-        private int picked = 0;
-        private Boolean rotate = true;
+        private UserPreferences Prefs;
+        private int Picked = 0;
+        private Boolean Rotate = true;
         private System.Threading.Timer TestTimer;
 
         public Form1()
@@ -27,35 +27,35 @@ namespace wallpaperchanger
             InitializeComponent();
             ApiHelper.initializeClient();
 
-            // ComboBox
+            // ComboBox (In Minutes)
             rotationTime.Items.Add("1");
             rotationTime.Items.Add("5");
             rotationTime.Items.Add("15");
             rotationTime.Items.Add("30");
             rotationTime.Items.Add("60");
 
-            this.prefs = new UserPreferences();
+            this.Prefs = new UserPreferences();
 
-            if (this.prefs.Errors.Count() > 0)
+            if (this.Prefs.Errors.Count() > 0)
             {
-                string prefErrors = "";
+                string PrefErrors = "";
 
-                foreach (string error in this.prefs.Errors)
+                foreach (string error in this.Prefs.Errors)
                 {
-                    prefErrors += error + " ";
+                    PrefErrors += error + " ";
                 }
 
-                MessageBox.Show("Errors: \n " + prefErrors + "\n Please open this software as administrator", "Error",
+                MessageBox.Show("Errors: \n " + PrefErrors + "\n Please open this software as administrator", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 Application.Exit();
             }
 
-            wallpaperCategory.Text = prefs.Category;
-            saveFolder.Text = prefs.Dir;
-            ResolutionWidth.Text = prefs.Width;
-            ResolutionHeight.Text = prefs.Height;
-            rotationTime.SelectedItem = prefs.Time;
+            wallpaperCategory.Text = Prefs.Category;
+            saveFolder.Text = Prefs.Dir;
+            ResolutionWidth.Text = Prefs.Width;
+            ResolutionHeight.Text = Prefs.Height;
+            rotationTime.SelectedItem = Prefs.Time;
 
         }
 
@@ -81,7 +81,7 @@ namespace wallpaperchanger
                 MessageBox.Show("Please type a category", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            else if (!this.prefs.Update("Category", this.prefs.Category, wallpaperCategory.Text))
+            else if (!this.Prefs.Update("Category", this.Prefs.Category, wallpaperCategory.Text))
             {
                 MessageBox.Show("Error saving your data", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -99,7 +99,7 @@ namespace wallpaperchanger
                 MessageBox.Show("Please type a category", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            else if (!this.prefs.Update("Directory", this.prefs.Dir, saveFolder.Text))
+            else if (!this.Prefs.Update("Directory", this.Prefs.Dir, saveFolder.Text))
             {
                 MessageBox.Show("Error saving your data", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -118,7 +118,7 @@ namespace wallpaperchanger
                 MessageBox.Show("Please type a resolution", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            else if (!this.prefs.Update("Width", this.prefs.Width, ResolutionWidth.Text) || !this.prefs.Update("Height", this.prefs.Height, ResolutionHeight.Text))
+            else if (!this.Prefs.Update("Width", this.Prefs.Width, ResolutionWidth.Text) || !this.Prefs.Update("Height", this.Prefs.Height, ResolutionHeight.Text))
             {
                 MessageBox.Show("Error saving your data", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -140,19 +140,22 @@ namespace wallpaperchanger
             else
             {
                 Console.WriteLine(wallpaperCategory.Text);
-                RootObject wallpaper = await WallpaperFetcher.LoadWallpaper(wallpaperCategory.Text, ResolutionWidth.Text, ResolutionHeight.Text);
+
+                WallpaperFetcher wf = new WallpaperFetcher(wallpaperCategory.Text, ResolutionWidth.Text, ResolutionHeight.Text);
+
+                await wf.LoadWallpaper();
 
 
-                if (wallpaper.meta.total <= 0)
+                if (wf.Wallpaper.meta.total <= 0)
                 {
                     MessageBox.Show("No wallpapers found with that category", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                if (wallpaper.meta.total < 10)
+                if (wf.Wallpaper.meta.total < 10)
                 {
-                    await WallpaperFetcher.DownloadWallpapers(this.prefs.Dir, this.prefs.Category, this.prefs.Width, this.prefs.Height,);
+                    await wf.DownloadWallpapers(this.Prefs.Dir, wf.Wallpaper.meta.total);
 
                     /*                    for (int i = 0; i < wallpaper.meta.total; i++)
                                         {
@@ -166,7 +169,7 @@ namespace wallpaperchanger
                 }
                 else 
                 {
-                    await WallpaperFetcher.DownloadWallpapers(this.prefs.Dir, this.prefs.Category, this.prefs.Width, this.prefs.Height, 10);
+                    await wf.DownloadWallpapers(this.Prefs.Dir, 10);
 
 /*                    for (int i = 0; i < 10; i++)
                     {
@@ -217,39 +220,42 @@ namespace wallpaperchanger
             }
         }
 
+
+        // Incomplete | Please rename properly and complete it.
         private void Test(Object obj)
         {
-            string[] fileEntries = Directory.GetFiles(this.prefs.Dir);
+            string[] fileEntries = Directory.GetFiles(this.Prefs.Dir);
 
             if (fileEntries.Length < 10)
             {
                 //
             }
 
-/*             if (this.picked > fileEntries.Length - 1)
+/*             if (this.Picked > fileEntries.Length - 1)
              {
-                this.picked = 0;
+                this.Picked = 0;
              }
 */
-            this.picked = (this.picked > fileEntries.Length - 1) ? 0 : this.picked;
+            this.Picked = (this.Picked > fileEntries.Length - 1) ? 0 : this.Picked;
 
-             Console.WriteLine("Changing to: " + fileEntries[picked]);
-             Wallpaper.SetDesktopWallpaper(fileEntries[picked]);
-             this.picked++;
+             Console.WriteLine("Changing to: " + fileEntries[Picked]);
+             Wallpaper.SetDesktopWallpaper(fileEntries[Picked]);
+             this.Picked++;
         }
 
         private void ToggleRotation_Click(object sender, EventArgs e)
         {
-            if (this.rotate)
+            if (this.Rotate)
             {
                 this.TestTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                this.rotate = false;
+                this.Rotate = false;
                 ToggleRotation.Text = "Start Rotation";
             } else
             {
-                this.TestTimer.Change(5000, 5000);
+                int CurrentRotationTime = Convert.ToInt32(this.rotationTime.Text) * 1000;
+                this.TestTimer.Change(CurrentRotationTime, CurrentRotationTime);
                 ToggleRotation.Text = "Stop Rotation";
-                this.rotate = true;
+                this.Rotate = true;
             }
             
         }

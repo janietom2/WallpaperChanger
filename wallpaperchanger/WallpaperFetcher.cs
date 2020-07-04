@@ -18,26 +18,28 @@ namespace wallpaperchanger
         public string Width { private get; set; }
         public string Height { private get; set; }
         public int MetaTotal { private get; set; }
-        public RootObject Wallpapers { get; private set; }
+        public RootObject Wallpaper { get; private set; }
         public List<string> Errors { get; private set; }
 
 
-        WallpaperFetcher(string category, string width, string height)
+        public WallpaperFetcher(string category, string width, string height)
         {
             this.Category = category;
             this.Width = width;
-            this.Height = Height;
+            this.Height = height;
+            
         }
 
-        private async Task LoadWallpaper(string category, string width, string height)
+        public async Task<Boolean> LoadWallpaper()
         {
 
-            if (category == null || category.Length < 1)
+            if (this.Category == null || this.Category.Length < 1)
             {
                 this.Errors.Add("Invalid Category");
+                return false;
             }
 
-            string url = $"https://wallhaven.cc/api/v1/search?q={ category }&categories=111&purity=100&atleast={ width }x{ height }&sorting=random&order=asc";
+            string url = $"https://wallhaven.cc/api/v1/search?q={ this.Category }&categories=111&purity=100&atleast={ this.Width }x{ this.Height }&sorting=random&order=asc";
 
             using (HttpResponseMessage response = await ApiHelper.ApiClient.GetAsync(url))
             {
@@ -45,13 +47,15 @@ namespace wallpaperchanger
                 if (response.IsSuccessStatusCode)
                 {
                     string jsonString = await response.Content.ReadAsStringAsync();
-                    this.Wallpapers = JsonConvert.DeserializeObject<RootObject>(jsonString);
+                    this.Wallpaper = JsonConvert.DeserializeObject<RootObject>(jsonString);
+                    return true;
                 }
-                else 
+                else
                 {
-                    this.Errors.Add(response.ReasonPhrase);
+                    return false;
                 }
-            }
+            } 
+
         }
 
 
@@ -72,14 +76,12 @@ namespace wallpaperchanger
             }
         }
 
-        public async Task DownloadWallpapers(string dir, string category, string width, string height, int ArrayLenght)
+        public async Task DownloadWallpapers(string dir,  int ArrayLenght)
         {
-            RootObject wallpapers = await LoadWallpaper(category, width, height);
-
             for(int i = 0; i < ArrayLenght; i++)
             {
-                string[] filename = new Uri(wallpapers.data[i].path).Segments;
-                Image.DownloadFromWeb(wallpapers.data[i].path, dir, filename[filename.Length - 1]);
+                string[] filename = new Uri(this.Wallpaper.data[i].path).Segments;
+                Image.DownloadFromWeb(this.Wallpaper.data[i].path, dir, filename[filename.Length - 1]);
             }
 
         }
