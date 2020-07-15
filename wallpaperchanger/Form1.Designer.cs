@@ -128,6 +128,7 @@
             this.rotationTime.Name = "rotationTime";
             this.rotationTime.Size = new System.Drawing.Size(165, 24);
             this.rotationTime.TabIndex = 7;
+            this.rotationTime.SelectedIndexChanged += new System.EventHandler(this.rotationTime_SelectedIndexChanged);
             // 
             // updateRotationTime
             // 
@@ -138,6 +139,7 @@
             this.updateRotationTime.TabIndex = 8;
             this.updateRotationTime.Text = "Update";
             this.updateRotationTime.UseVisualStyleBackColor = true;
+            this.updateRotationTime.Click += new System.EventHandler(this.updateRotationTime_Click);
             // 
             // okBtn
             // 
@@ -242,7 +244,7 @@
             this.ToggleRotation.Name = "ToggleRotation";
             this.ToggleRotation.Size = new System.Drawing.Size(164, 32);
             this.ToggleRotation.TabIndex = 18;
-            this.ToggleRotation.Text = "Stop Rotation";
+            this.ToggleRotation.Text = "Start Rotation";
             this.ToggleRotation.UseVisualStyleBackColor = true;
             this.ToggleRotation.Click += new System.EventHandler(this.ToggleRotation_Click);
             // 

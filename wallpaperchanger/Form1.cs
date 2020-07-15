@@ -19,7 +19,7 @@ namespace wallpaperchanger
     {
         private UserPreferences Prefs;
         private int Picked = 0;
-        private Boolean Rotate = true;
+        private Boolean Rotate = false;
         private System.Threading.Timer TestTimer;
 
         public Form1()
@@ -56,13 +56,12 @@ namespace wallpaperchanger
             ResolutionWidth.Text = Prefs.Width;
             ResolutionHeight.Text = Prefs.Height;
             rotationTime.SelectedItem = Prefs.Time;
-
         }
 
         private void Form1_Load(object sender, EventArgs ev)
         {
             TimerCallback timerDelegate = new TimerCallback(Test);
-            this.TestTimer = new System.Threading.Timer(timerDelegate, null, 5000, 5000);
+            this.TestTimer = new System.Threading.Timer(timerDelegate, null, Timeout.Infinite, Timeout.Infinite);
         }
 
         //  This maybe needs its own class (Modularity)
@@ -111,6 +110,11 @@ namespace wallpaperchanger
             }
         }
 
+        private void updateRotationTime_Click(object sender, EventArgs e)
+        {
+            // Set TIME
+        }
+
         private void UpdateResolution_Click(object sender, EventArgs e)
         {
             if (ResolutionWidth.Text == "" || ResolutionHeight.Text == "")
@@ -139,48 +143,25 @@ namespace wallpaperchanger
             }
             else
             {
-                Console.WriteLine(wallpaperCategory.Text);
+                Console.WriteLine(wallpaperCategory.Text); // Debugging only
 
-                WallpaperFetcher wf = new WallpaperFetcher(wallpaperCategory.Text, ResolutionWidth.Text, ResolutionHeight.Text);
+                WallpaperFetcher wf = new WallpaperFetcher(wallpaperCategory.Text, ResolutionWidth.Text, ResolutionHeight.Text, saveFolder.Text);
 
                 await wf.LoadWallpaper();
-
 
                 if (wf.Wallpaper.meta.total <= 0)
                 {
                     MessageBox.Show("No wallpapers found with that category", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
-                }
-
-                if (wf.Wallpaper.meta.total < 10)
+                } 
+                else
                 {
-                    await wf.DownloadWallpapers(this.Prefs.Dir, wf.Wallpaper.meta.total);
-
-                    /*                    for (int i = 0; i < wallpaper.meta.total; i++)
-                                        {
-                                            Console.WriteLine("id " + i + ": " + wallpaper.data[i].path);
-                                        }*/
-
-                    // Add this to the loop
-                    /*                    string[] filename = new Uri(wallpaper.data[0].path).Segments;
-                                        Image.DownloadFromWeb(wallpaper.data[0].path, saveFolder.Text, filename[filename.Length-1]);*/
-
+                    wf.CleanWallpapers(); // Clean old wallpapers
+                    Console.WriteLine("Downloading... => "+wf.Wallpaper.meta.total);
+                    wf.DownloadWallpapers();
                 }
-                else 
-                {
-                    await wf.DownloadWallpapers(this.Prefs.Dir, 10);
 
-/*                    for (int i = 0; i < 10; i++)
-                    {
-                        Console.WriteLine("id " + i + ": " + wallpaper.data[i].path);
-                    }*/
-
-                    // Add this to the loop
-/*                    string[] filename = new Uri(wallpaper.data[0].path).Segments;
-                    Image.DownloadFromWeb(wallpaper.data[0].path, saveFolder.Text, filename[filename.Length - 1]);
-*/
-                }
             }
         }
 
@@ -220,27 +201,29 @@ namespace wallpaperchanger
             }
         }
 
-
         // Incomplete | Please rename properly and complete it.
         private void Test(Object obj)
         {
-            string[] fileEntries = Directory.GetFiles(this.Prefs.Dir);
-
-            if (fileEntries.Length < 10)
+            if(this.Rotate)
             {
-                //
+                string[] fileEntries = Directory.GetFiles(this.Prefs.Dir);
+
+                if (fileEntries.Length < 10)
+                {
+                    //
+                }
+
+    /*             if (this.Picked > fileEntries.Length - 1)
+                 {
+                    this.Picked = 0;
+                 }
+    */
+                this.Picked = (this.Picked > fileEntries.Length - 1) ? 0 : this.Picked;
+
+                 Console.WriteLine("Changing to: " + fileEntries[Picked]);
+                 Wallpaper.SetDesktopWallpaper(fileEntries[Picked]);
+                 this.Picked++;
             }
-
-/*             if (this.Picked > fileEntries.Length - 1)
-             {
-                this.Picked = 0;
-             }
-*/
-            this.Picked = (this.Picked > fileEntries.Length - 1) ? 0 : this.Picked;
-
-             Console.WriteLine("Changing to: " + fileEntries[Picked]);
-             Wallpaper.SetDesktopWallpaper(fileEntries[Picked]);
-             this.Picked++;
         }
 
         private void ToggleRotation_Click(object sender, EventArgs e)
@@ -254,10 +237,15 @@ namespace wallpaperchanger
             {
                 int CurrentRotationTime = Convert.ToInt32(this.rotationTime.Text) * 1000;
                 this.TestTimer.Change(CurrentRotationTime, CurrentRotationTime);
-                ToggleRotation.Text = "Stop Rotation";
                 this.Rotate = true;
+                ToggleRotation.Text = "Stop Rotation";
             }
             
+        }
+
+        private void rotationTime_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            return;
         }
     }
 }

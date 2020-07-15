@@ -17,22 +17,22 @@ namespace wallpaperchanger
         public string Category { private get; set; }
         public string Width { private get; set; }
         public string Height { private get; set; }
+        public string SaveDirectory { private get; set; }
         public int MetaTotal { private get; set; }
         public RootObject Wallpaper { get; private set; }
         public List<string> Errors { get; private set; }
 
 
-        public WallpaperFetcher(string category, string width, string height)
+        public WallpaperFetcher(string category, string width, string height, string directory)
         {
             this.Category = category;
             this.Width = width;
             this.Height = height;
-            
+            this.SaveDirectory = directory;
         }
 
         public async Task<Boolean> LoadWallpaper()
         {
-
             if (this.Category == null || this.Category.Length < 1)
             {
                 this.Errors.Add("Invalid Category");
@@ -58,10 +58,9 @@ namespace wallpaperchanger
 
         }
 
-
-        public void CleanWallpapers(string dir)
+        public void CleanWallpapers()
         {
-            string[] fileEntries = Directory.GetFiles(dir);
+            string[] fileEntries = Directory.GetFiles(SaveDirectory);
 
             foreach(string file in fileEntries)
             {
@@ -76,14 +75,21 @@ namespace wallpaperchanger
             }
         }
 
-        public async Task DownloadWallpapers(string dir,  int ArrayLenght)
+        public void DownloadWallpapers()
         {
-            for(int i = 0; i < ArrayLenght; i++)
+            int DownloadLimit = 10;
+
+            if (this.Wallpaper.meta.total < 10)
             {
-                string[] filename = new Uri(this.Wallpaper.data[i].path).Segments;
-                Image.DownloadFromWeb(this.Wallpaper.data[i].path, dir, filename[filename.Length - 1]);
+                DownloadLimit = this.Wallpaper.meta.total;
             }
 
+            for(int i = 0; i < DownloadLimit; i++)
+            {
+                string[] filename = new Uri(this.Wallpaper.data[i].path).Segments;
+                Image.DownloadFromWeb(this.Wallpaper.data[i].path, this.SaveDirectory, filename[filename.Length - 1]);
+            }
         }
+
     }
 }
